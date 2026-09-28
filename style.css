@@ -1,0 +1,52 @@
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+html, body {
+  width: 100%;
+  background: #010202;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar         { width: 3px; }
+::-webkit-scrollbar-track   { background: #000; }
+::-webkit-scrollbar-thumb   { background: #161b20; border-radius: 2px; }
+* { scrollbar-width: thin; scrollbar-color: #161b20 #000; }
+
+#bw-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+}
+
+#glass-sheet {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: 1;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(2, 3, 4, 0.20);
+}
+
+.scroll-space {
+  height: 2600vh;
+  width: 100%;
+  pointer-events: none;
+  position: relative;
+  z-index: 2;
+}
+
