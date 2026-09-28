@@ -69,7 +69,8 @@ const DU = {};
   'u_mouse',
   'u_shark', 'u_sharkFin', 'u_sharkSegs[0]',
   'u_jelly', 'u_jellyPulse', 'u_jellyTentacles[0]',
-  'u_narwhal', 'u_narwhalParams'
+  'u_narwhal', 'u_narwhalParams',
+  'u_singularity'
 ].forEach(n => {
   DU[n] = gl.getUniformLocation(dispProg, n) || gl.getUniformLocation(dispProg, n.replace('[0]', ''));
 });
@@ -162,12 +163,14 @@ function frame(ts) {
   }
   scrollDelta = 0;
 
-  const maxScroll = Math.max(document.body.scrollHeight - viewH, 1);
-  const scrollProgress = Math.max(0.0, Math.min(1.0, scrollY / maxScroll));
+  const waterMaxScroll = 25 * viewH;
+  const waterProgress = Math.max(0.0, Math.min(1.0, scrollY / waterMaxScroll));
+  const singularityActive = scrollY >= waterMaxScroll ? 1.0 : 0.0;
+  const singularityProgress = Math.max(0.0, Math.min(1.0, (scrollY - waterMaxScroll) / viewH));
 
   fluid.step(dt);
 
-  creatures.update(dt, scrollProgress);
+  creatures.update(dt, waterProgress);
   creatures.wakes.forEach(w => {
     fluid.injectCreatureWake(w.x, w.y, w.vx, w.vy, w.radius || 0.005);
   });
@@ -186,7 +189,8 @@ function frame(ts) {
 
   gl.uniform1f(DU['u_time'], time);
   gl.uniform1f(DU['u_aspect'], viewW / viewH);
-  gl.uniform1f(DU['u_scrollProgress'], scrollProgress);
+  gl.uniform1f(DU['u_scrollProgress'], waterProgress);
+  gl.uniform2f(DU['u_singularity'], singularityActive, singularityProgress);
   gl.uniform4f(DU['u_mouse'], mouse.x, mouse.y, mouse.vx, mouse.vy);
 
   const shark = creatures.shark;

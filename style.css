@@ -43,7 +43,7 @@ html, body {
 }
 
 .scroll-space {
-  height: 2600vh;
+  height: 2700vh;
   width: 100%;
   pointer-events: none;
   position: relative;

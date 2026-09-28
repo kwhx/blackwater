@@ -143,6 +143,7 @@ uniform vec3      u_jellyTentacles[16];
 
 uniform vec4      u_narwhal;
 uniform vec4      u_narwhalParams;
+uniform vec2      u_singularity;
 
 in  vec2 v_uv;
 out vec4 o_color;
@@ -487,6 +488,32 @@ void main() {
 
   float depthDarkening = clamp(1.0 - u_scrollProgress, 0.0, 1.0);
   scene *= depthDarkening;
+
+  if (u_singularity.x > 0.5) {
+    float prog = u_singularity.y;
+    vec2 pCenter = (v_uv - vec2(0.5)) * vec2(u_aspect, 1.0);
+    float d = length(pCenter);
+
+    float coreRadius = 0.0018 + 0.0012 * prog;
+    float core = 1.0 - smoothstep(0.0, coreRadius, d);
+
+    float glowRadius = 0.035 + 0.28 * pow(prog, 1.3);
+    float innerGlow = exp(-d / (0.008 + 0.025 * prog));
+    float outerHalo = exp(-d / glowRadius);
+
+    float pulse = 1.0 + 0.07 * sin(u_time * 8.0) + 0.04 * cos(u_time * 13.0);
+    float spikeX = exp(-abs(pCenter.x) * 160.0) * exp(-abs(pCenter.y) * 16.0);
+    float spikeY = exp(-abs(pCenter.y) * 160.0) * exp(-abs(pCenter.x) * 16.0);
+    float spikes = (spikeX + spikeY) * (0.15 + 0.85 * prog);
+
+    float baseLum = 0.35 + 0.65 * prog;
+    vec3 coreCol = vec3(1.0, 1.0, 1.0) * (core * 1.5 + innerGlow * 0.9) * baseLum;
+    vec3 haloCol = vec3(0.55, 0.75, 1.00) * outerHalo * (0.10 + 0.70 * pow(prog, 1.5)) * pulse;
+    vec3 spikeCol = vec3(0.85, 0.92, 1.00) * spikes * (0.08 + 0.45 * prog) * pulse;
+
+    vec3 singularity = (coreCol + haloCol + spikeCol) * pulse;
+    scene += singularity;
+  }
 
   vec2 vc = uv * 2.0 - 1.0;
   float vig = pow(clamp(1.0 - dot(vc, vc) * 0.38, 0.0, 1.0), 1.10);
