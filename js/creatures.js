@@ -12,8 +12,8 @@ export class GreenlandShark {
     this.targetDepth = 0.35;
 
     this.radii = [
-      0.024, 0.032, 0.038, 0.041, 0.040, 
-      0.038, 0.035, 0.030, 0.025, 0.020, 
+      0.024, 0.032, 0.038, 0.041, 0.040,
+      0.038, 0.035, 0.030, 0.025, 0.020,
       0.016, 0.012, 0.009, 0.007
     ];
     this.spacing = 0.022;
@@ -69,14 +69,14 @@ export class GreenlandShark {
       let dy = curr.y - prev.y;
       let dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < 1e-5) { dx = 1e-4; dist = 1e-4; }
-      
+
       const targetDist = this.spacing;
       curr.x = prev.x + (dx / dist) * targetDist;
       curr.y = prev.y + (dy / dist) * targetDist;
 
       const waveAmp = (i / this.numSegs) * 0.009;
       const lateralX = -forwardY * Math.sin(this.tailPhase - i * 0.45) * waveAmp;
-      const lateralY =  forwardX * Math.sin(this.tailPhase - i * 0.45) * waveAmp;
+      const lateralY = forwardX * Math.sin(this.tailPhase - i * 0.45) * waveAmp;
       curr.x += lateralX * 0.35;
       curr.y += lateralY * 0.35;
     }
@@ -114,7 +114,7 @@ export class GreenlandShark {
       x: tail.x,
       y: tail.y,
       vx: -dy * wag * 0.08,
-      vy:  dx * wag * 0.08,
+      vy: dx * wag * 0.08,
       radius: 0.009
     };
   }
@@ -160,7 +160,7 @@ export class ArcticMedusa {
 
       const targetY = prev.y - 0.012;
       const targetX = prev.x + Math.sin(this.pulsePhase - i * 0.4) * 0.0025;
-      
+
       curr.x += (targetX - curr.x) * 0.22 * dt;
       curr.y += (targetY - curr.y) * 0.22 * dt;
     }

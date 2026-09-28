@@ -162,7 +162,6 @@ function frame(ts) {
   }
   scrollDelta = 0;
 
-  // Normalizes vertical scroll position [0.0, 1.0] across total scrollable viewport height.
   const maxScroll = Math.max(document.body.scrollHeight - viewH, 1);
   const scrollProgress = Math.max(0.0, Math.min(1.0, scrollY / maxScroll));
 

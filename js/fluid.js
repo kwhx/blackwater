@@ -191,7 +191,6 @@ export class FluidSimulation {
     this._splat(x, y, vx * 0.8, vy * 0.8, 0.007, speed > 0.015);
   }
 
-  // GPU Navier-Stokes solver using Jacobi pressure-projection with unconditionally stable semi-Lagrangian advection.
   step(dt) {
     const { gl, W, H, aspect } = this;
     const ts = [1 / W, 1 / H];

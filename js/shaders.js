@@ -1,4 +1,4 @@
-export const VERT = /* glsl */`#version 300 es
+export const VERT = `#version 300 es
 precision highp float;
 in  vec2 a_pos;
 out vec2 v_uv;
@@ -7,7 +7,7 @@ void main() {
   gl_Position = vec4(a_pos, 0.0, 1.0);
 }`;
 
-export const FRAG_ADVECT = /* glsl */`#version 300 es
+export const FRAG_ADVECT = `#version 300 es
 precision highp float;
 uniform sampler2D u_velocity;
 uniform sampler2D u_source;
@@ -21,7 +21,7 @@ void main() {
   o_color  = u_dissipation * texture(u_source, pos);
 }`;
 
-export const FRAG_DIV = /* glsl */`#version 300 es
+export const FRAG_DIV = `#version 300 es
 precision highp float;
 uniform sampler2D u_velocity;
 uniform vec2      u_texelSize;
@@ -36,7 +36,7 @@ void main() {
   o_color  = vec4(0.5 * (r - l + tt - b), 0.0, 0.0, 1.0);
 }`;
 
-export const FRAG_PRESSURE = /* glsl */`#version 300 es
+export const FRAG_PRESSURE = `#version 300 es
 precision highp float;
 uniform sampler2D u_pressure;
 uniform sampler2D u_divergence;
@@ -53,7 +53,7 @@ void main() {
   o_color   = vec4((l + r + b + tt - div) * 0.25, 0.0, 0.0, 1.0);
 }`;
 
-export const FRAG_GRAD_SUB = /* glsl */`#version 300 es
+export const FRAG_GRAD_SUB = `#version 300 es
 precision highp float;
 uniform sampler2D u_pressure;
 uniform sampler2D u_velocity;
@@ -72,7 +72,7 @@ void main() {
   o_color = vec4(vel, 0.0, 1.0);
 }`;
 
-export const FRAG_CURL = /* glsl */`#version 300 es
+export const FRAG_CURL = `#version 300 es
 precision highp float;
 uniform sampler2D u_velocity;
 uniform vec2      u_texelSize;
@@ -87,7 +87,7 @@ void main() {
   o_color  = vec4(0.5 * (r - l - tt + b), 0.0, 0.0, 1.0);
 }`;
 
-export const FRAG_VORTICITY = /* glsl */`#version 300 es
+export const FRAG_VORTICITY = `#version 300 es
 precision highp float;
 uniform sampler2D u_velocity;
 uniform sampler2D u_curl;
@@ -108,7 +108,7 @@ void main() {
   o_color  = vec4(texture(u_velocity, v_uv).xy + f * u_dt, 0.0, 1.0);
 }`;
 
-export const FRAG_SPLAT = /* glsl */`#version 300 es
+export const FRAG_SPLAT = `#version 300 es
 precision highp float;
 uniform sampler2D u_target;
 uniform vec2      u_point;
@@ -123,7 +123,7 @@ void main() {
   o_color  = texture(u_target, v_uv) + vec4(u_value * sp, 0.0);
 }`;
 
-export const FRAG_DISPLAY = /* glsl */`#version 300 es
+export const FRAG_DISPLAY = `#version 300 es
 precision highp float;
 
 uniform sampler2D u_dye;
@@ -200,7 +200,6 @@ float iceCracks(vec2 p) {
   return sqrt(d2) - sqrt(d1);
 }
 
-// Non-linear Gerstner wave superposition with multi-frequency cross-swell interference.
 float waveHeight(vec2 p, float t, vec2 flow) {
   vec2 warp = vec2(
     sin(p.y * 0.70 + t * 0.08) * 0.14 + cos(p.x * 0.40 - t * 0.05) * 0.08,
@@ -267,16 +266,16 @@ const vec3 LIGHT_DIR = normalize(vec3(-0.25, 0.65, -0.72));
 
 vec3 getSkyReflection(vec3 r) {
   float zenith = clamp(r.y, 0.0, 1.0);
-  vec3 col = mix(vec3(0.015, 0.035, 0.060), vec3(0.050, 0.110, 0.180), pow(zenith, 0.8));
+  vec3 col = mix(vec3(0.005, 0.006, 0.008), vec3(0.016, 0.019, 0.023), pow(zenith, 0.8));
 
   float rDotL = max(0.0, dot(r, LIGHT_DIR));
   float broadSheen = pow(rDotL, 3.5) * 0.45;
   float ridgeSheen = pow(rDotL, 10.0) * 0.55;
-  vec3 sheenColor  = vec3(0.28, 0.48, 0.70);
+  vec3 sheenColor  = vec3(0.088, 0.104, 0.118);
   col += sheenColor * (broadSheen + ridgeSheen);
 
   float horizon = pow(1.0 - abs(r.y), 3.0);
-  col += vec3(0.025, 0.060, 0.100) * horizon;
+  col += vec3(0.008, 0.010, 0.012) * horizon;
 
   return col;
 }
@@ -396,7 +395,6 @@ void main() {
 
   vec3 rd = normalize(pScreen.x * uu + pScreen.y * vv + 1.18 * ww);
 
-  // Monotonic damped raymarching step convergence onto Gerstner heightfield.
   float t = (0.0 - ro.y) / rd.y;
   vec3 p = ro + rd * t;
 
@@ -415,17 +413,19 @@ void main() {
   float NdotV = max(0.0, dot(-rd, N));
   float fresnel = 0.06 + 0.94 * pow(1.0 - NdotV, 3.5);
 
-  vec3 deepTrough = vec3(0.002, 0.005, 0.009);
-  vec3 tealVolume = vec3(0.006, 0.018, 0.032);
-  vec3 liquidBody = mix(deepTrough, tealVolume, clamp(N.y * 0.65, 0.0, 1.0));
+  vec3 deepTrough = vec3(0.004, 0.006, 0.008);
+  vec3 carbonBody = vec3(0.0155, 0.0195, 0.0255);
+  vec3 liquidBody = mix(deepTrough, carbonBody, clamp(N.y * 0.75, 0.0, 1.0));
 
   vec3 waterColor = mix(liquidBody, skyReflect, fresnel);
 
   vec3 H = normalize(LIGHT_DIR - rd);
   float nDotH = max(0.0, dot(N, H));
-  float viscousSheen1 = pow(nDotH, 12.0) * 0.38;
-  float viscousSheen2 = pow(nDotH, 3.5)  * 0.18;
-  vec3 highlightColor = vec3(0.22, 0.42, 0.62) * viscousSheen1 + vec3(0.12, 0.25, 0.38) * viscousSheen2;
+  float viscousSheen1 = pow(nDotH, 12.0) * 0.85;
+  float viscousSheen2 = pow(nDotH, 3.5)  * 0.45;
+  vec3 crestColor = vec3(0.173, 0.194, 0.214);
+  vec3 slopeColor = vec3(0.088, 0.104, 0.118);
+  vec3 highlightColor = crestColor * viscousSheen1 + slopeColor * viscousSheen2;
   waterColor += highlightColor;
 
   if (ENABLE_CREATURES) {
@@ -476,13 +476,13 @@ void main() {
 
     vec3 glassH = normalize(LIGHT_DIR - rd);
     float glassSpec = pow(max(0.0, dot(N_glass, glassH)), 16.0) * 0.22;
-    vec3 glassHighlight = vec3(0.75, 0.88, 1.00) * glassSpec;
+    vec3 glassHighlight = vec3(0.42, 0.44, 0.46) * glassSpec;
 
     scene += glassHighlight;
     scene = mix(scene, glassSky, glassFresnel * 0.15);
 
     float grazingRim = pow(1.0 - glassNdotV, 4.0) * 0.10;
-    scene += vec3(0.18, 0.35, 0.52) * grazingRim;
+    scene += vec3(0.12, 0.14, 0.16) * grazingRim;
   }
 
   float depthDarkening = clamp(1.0 - u_scrollProgress, 0.0, 1.0);
