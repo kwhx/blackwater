@@ -1,0 +1,39 @@
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+html, body {
+  width: 100%;
+  background: #030305;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar         { width: 3px; }
+::-webkit-scrollbar-track   { background: #000; }
+::-webkit-scrollbar-thumb   { background: #111622; border-radius: 2px; }
+* { scrollbar-width: thin; scrollbar-color: #111622 #000; }
+
+#bw-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.scroll-space {
+  height: 2600vh;
+  width: 100%;
+  pointer-events: none;
+  position: relative;
+  z-index: 1;
+}
+
